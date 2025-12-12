@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>环保文献智能数据库 - 部署说明</title>
+    <style>
+        @media print {
+            body { font-size: 11pt; }
+            pre { white-space: pre-wrap; word-wrap: break-word; }
+            h1 { page-break-before: auto; }
+            h2 { page-break-before: auto; page-break-after: avoid; }
+            h3 { page-break-after: avoid; }
+            pre, table { page-break-inside: avoid; }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #fff;
+        }
+
+        h1 {
+            color: #1a5f2a;
+            font-size: 28px;
+            font-weight: 600;
+            border-bottom: 3px solid #1a5f2a;
+            padding-bottom: 12px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #2d8a3e;
+            font-size: 22px;
+            font-weight: 600;
+            border-bottom: 2px solid #e8f5e9;
+            padding-bottom: 10px;
+            margin-top: 35px;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            color: #1a5f2a;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin: 12px 0;
+        }
+
+        code {
+            background-color: #f5f5f5;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: "SF Mono", "Consolas", "Monaco", "Menlo", monospace;
+            font-size: 13px;
+            color: #c7254e;
+        }
+
+        pre {
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 15px 0;
+        }
+
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            color: #333;
+            font-size: 13px;
+        }
+
+        blockquote {
+            border-left: 4px solid #2d8a3e;
+            margin: 20px 0;
+            padding: 12px 20px;
+            background-color: #f9fdf9;
+            color: #555;
+            border-radius: 0 6px 6px 0;
+        }
+
+        blockquote p {
+            margin: 0;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #e8f5e9;
+            color: #1a5f2a;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        a {
+            color: #2d8a3e;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin: 12px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #e0e0e0;
+            margin: 30px 0;
+        }
+
+        strong {
+            color: #1a5f2a;
+            font-weight: 600;
+        }
+
+        /* Table of contents styling */
+        .toc {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin: 5px 0;
+        }
+
+        .toc a {
+            color: #333;
+        }
+
+        /* Print button (hidden when printing) */
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2d8a3e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .print-button:hover {
+            background: #1a5f2a;
+        }
+
+        @media print {
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">🖨️ 打印/保存为PDF</button>
+    <h1 id="-">环保文献智能数据库 - 详细部署说明</h1>
+<p>本文档将指导您一步步完成系统的本地部署。即使您没有编程经验，只要按照步骤操作，也可以成功运行这个演示系统。</p>
+<hr />
+<h2 id="_1">目录</h2>
+<ol>
+<li><a href="#1-系统要求">系统要求</a></li>
+<li><a href="#2-下载项目代码">下载项目代码</a></li>
+<li><a href="#3-安装准备软件">安装准备软件</a></li>
+<li><a href="#4-启动ai服务-ollama">启动AI服务 (Ollama)</a></li>
+<li><a href="#5-启动后端服务">启动后端服务</a></li>
+<li><a href="#6-启动前端服务">启动前端服务</a></li>
+<li><a href="#7-使用系统">使用系统</a></li>
+<li><a href="#8-常见问题解答">常见问题解答</a></li>
+</ol>
+<hr />
+<h2 id="1">1. 系统要求</h2>
+<p>在开始之前，请确保您的电脑满足以下要求：</p>
+<ul>
+<li><strong>操作系统</strong>: Windows 10/11, macOS 10.15+, 或 Linux</li>
+<li><strong>内存</strong>: 至少 16GB RAM (推荐 32GB，因为需要运行AI模型)</li>
+<li><strong>硬盘空间</strong>: 至少 20GB 可用空间</li>
+<li><strong>网络</strong>: 首次运行需要联网下载模型和依赖</li>
+</ul>
+<hr />
+<h2 id="2">2. 下载项目代码</h2>
+<h3 id="git">方法一: 使用 Git 克隆 (推荐)</h3>
+<p>如果您的电脑已安装 Git，打开命令行/终端，运行:</p>
+<pre><code class="language-bash">git clone https://github.com/tyang4-ai/Random-testing-repo.git
+</code></pre>
+<p>克隆完成后，项目位于 <code>Random-testing-repo/ai-article-database/</code> 文件夹中。</p>
+<h3 id="zip">方法二: 直接下载 ZIP 文件</h3>
+<p>如果没有安装 Git:</p>
+<ol>
+<li>打开浏览器，访问: https://github.com/tyang4-ai/Random-testing-repo</li>
+<li>点击绿色的 <strong>"Code"</strong> 按钮</li>
+<li>选择 <strong>"Download ZIP"</strong></li>
+<li>下载完成后，解压 ZIP 文件到您想要的位置</li>
+<li>项目位于解压后的 <code>Random-testing-repo-main/ai-article-database/</code> 文件夹中</li>
+</ol>
+<h3 id="git_1">方法三: 安装 Git 后克隆</h3>
+<p><strong>Windows:</strong>
+1. 访问 https://git-scm.com/download/win
+2. 下载并安装 Git
+3. 安装完成后，打开"命令提示符"或"Git Bash"
+4. 运行克隆命令</p>
+<p><strong>macOS:</strong></p>
+<pre><code class="language-bash"># 使用 Homebrew 安装
+brew install git
+
+# 然后克隆项目
+git clone https://github.com/tyang4-ai/Random-testing-repo.git
+</code></pre>
+<hr />
+<h2 id="3">3. 安装准备软件</h2>
+<h3 id="31-python">3.1 安装 Python</h3>
+<p>Python 是运行后端服务的编程语言。</p>
+<p><strong>Windows 用户:</strong>
+1. 打开浏览器，访问 https://www.python.org/downloads/
+2. 点击黄色的 "Download Python 3.12.x" 按钮
+3. 运行下载的安装程序
+4. <strong>重要</strong>: 勾选 "Add Python to PATH" 选项
+5. 点击 "Install Now"</p>
+<p><strong>macOS 用户:</strong>
+1. 打开"终端"应用 (在"应用程序" → "实用工具"中)
+2. 输入以下命令并按回车:
+   <code>brew install python</code>
+   (如果没有安装 Homebrew，先访问 https://brew.sh 安装)</p>
+<p><strong>验证安装:</strong>
+打开命令行/终端，输入:</p>
+<pre><code>python --version
+</code></pre>
+<p>应该显示 "Python 3.x.x"</p>
+<hr />
+<h3 id="32-nodejs">3.2 安装 Node.js</h3>
+<p>Node.js 是运行前端服务的工具。</p>
+<p><strong>所有系统:</strong>
+1. 访问 https://nodejs.org/
+2. 下载 "LTS" 版本 (长期支持版)
+3. 运行安装程序，一直点击"下一步"即可</p>
+<p><strong>验证安装:</strong>
+打开命令行/终端，输入:</p>
+<pre><code>node --version
+npm --version
+</code></pre>
+<p>都应该显示版本号</p>
+<hr />
+<h3 id="33-ollama-ai">3.3 安装 Ollama (AI引擎)</h3>
+<p>Ollama 是运行 DeepSeek AI 模型的工具。</p>
+<p><strong>Windows 用户:</strong>
+1. 访问 https://ollama.com/download
+2. 点击 "Download for Windows"
+3. 运行安装程序</p>
+<p><strong>macOS 用户:</strong>
+1. 访问 https://ollama.com/download
+2. 点击 "Download for macOS"
+3. 将 Ollama 拖入"应用程序"文件夹</p>
+<p><strong>Linux 用户:</strong>
+打开终端，运行:</p>
+<pre><code>curl -fsSL https://ollama.com/install.sh | sh
+</code></pre>
+<hr />
+<h2 id="4-ai-ollama">4. 启动AI服务 (Ollama)</h2>
+<h3 id="41-ai">4.1 下载AI模型</h3>
+<p>系统支持多种AI模型，推荐使用 <strong>Qwen2 (通义千问)</strong>，对中文支持最好。</p>
+<p>打开命令行/终端，输入以下命令:</p>
+<p><strong>推荐 - Qwen2 模型 (中文效果最好):</strong></p>
+<pre><code class="language-bash">ollama pull qwen2:7b
+</code></pre>
+<p><strong>备选模型 (如果上面的下载失败):</strong></p>
+<pre><code class="language-bash"># 较小的 Qwen 模型 (内存要求低)
+ollama pull qwen2:1.5b
+
+# 或者尝试其他模型
+ollama pull llama3:8b
+ollama pull gemma2:9b
+</code></pre>
+<blockquote>
+<p><strong>提示</strong>: 系统会自动检测已安装的模型并使用最合适的一个，所以只需要成功下载任意一个模型即可。</p>
+</blockquote>
+<hr />
+<h3 id="42">4.2 国内网络问题解决方案</h3>
+<p>如果下载模型时遇到网络错误 (如 "no such host" 或下载很慢)，请尝试以下方法:</p>
+<h4 id="vpn">方法一: 使用代理 (如果有VPN)</h4>
+<p>在命令行中设置代理后再下载:</p>
+<p><strong>Windows:</strong></p>
+<pre><code class="language-cmd">set HTTP_PROXY=http://127.0.0.1:7890
+set HTTPS_PROXY=http://127.0.0.1:7890
+ollama pull qwen2:7b
+</code></pre>
+<p><strong>macOS/Linux:</strong></p>
+<pre><code class="language-bash">export HTTP_PROXY=http://127.0.0.1:7890
+export HTTPS_PROXY=http://127.0.0.1:7890
+ollama pull qwen2:7b
+</code></pre>
+<blockquote>
+<p>将 <code>7890</code> 替换为您的代理端口号</p>
+</blockquote>
+<h4 id="_2">方法二: 手动复制模型文件</h4>
+<ol>
+<li>找一台网络畅通的电脑下载模型</li>
+<li>复制模型文件夹到目标电脑:</li>
+<li><strong>Windows</strong>: <code>C:\Users\&lt;用户名&gt;\.ollama\models\</code></li>
+<li><strong>macOS/Linux</strong>: <code>~/.ollama/models/</code></li>
+</ol>
+<h4 id="_3">方法三: 尝试更小的模型</h4>
+<p>较小的模型下载更快:</p>
+<pre><code class="language-bash">ollama pull qwen2:1.5b    # 约1GB
+ollama pull phi:latest    # 约1.6GB
+</code></pre>
+<hr />
+<h3 id="43-ollama">4.3 启动 Ollama 服务</h3>
+<p><strong>Windows:</strong>
+- 通常安装后会自动启动
+- 也可以在开始菜单搜索 "Ollama" 并运行</p>
+<p><strong>macOS:</strong>
+- 在"应用程序"中双击 Ollama 图标
+- 或在终端运行: <code>ollama serve</code></p>
+<p><strong>Linux:</strong></p>
+<pre><code class="language-bash">ollama serve
+</code></pre>
+<p><strong>验证服务是否运行:</strong>
+打开浏览器，访问 http://localhost:11434
+如果显示 "Ollama is running"，说明启动成功</p>
+<hr />
+<h2 id="5">5. 启动后端服务</h2>
+<h3 id="51">5.1 打开项目目录</h3>
+<p><strong>Windows:</strong>
+1. 按 Win+R，输入 <code>cmd</code>，按回车打开命令提示符
+2. 输入以下命令进入项目目录:
+   <code>cd 您的项目路径\ai-article-database\backend</code></p>
+<p><strong>macOS/Linux:</strong>
+1. 打开终端
+2. 输入:
+   <code>cd 您的项目路径/ai-article-database/backend</code></p>
+<h3 id="52">5.2 创建虚拟环境 (推荐)</h3>
+<pre><code class="language-bash"># 创建虚拟环境
+python -m venv venv
+
+# 激活虚拟环境
+# Windows:
+venv\Scripts\activate
+
+# macOS/Linux:
+source venv/bin/activate
+</code></pre>
+<p>激活后，命令行前面会出现 <code>(venv)</code> 标志</p>
+<h3 id="53">5.3 安装后端依赖</h3>
+<pre><code class="language-bash">pip install -r requirements.txt
+</code></pre>
+<p>这会安装所有需要的 Python 库。首次安装可能需要几分钟。</p>
+<h3 id="54">5.4 导入示例数据</h3>
+<p>首次运行需要导入示例文章数据:</p>
+<pre><code class="language-bash">python load_sample_data.py
+</code></pre>
+<p><strong>注意</strong>: 首次运行会自动下载 BGE 中文嵌入模型 (约1.3GB)，请耐心等待。</p>
+<p>导入成功后，您会看到:</p>
+<pre><code>✅ 成功导入 10 篇文章!
+</code></pre>
+<h3 id="55">5.5 启动后端服务</h3>
+<pre><code class="language-bash">python main.py
+</code></pre>
+<p>启动成功后，您会看到:</p>
+<pre><code>==================================================
+环保文献智能数据库启动成功!
+后端API地址: http://localhost:8000
+API文档地址: http://localhost:8000/docs
+==================================================
+</code></pre>
+<p><strong>保持这个终端窗口开着，不要关闭!</strong></p>
+<hr />
+<h2 id="6">6. 启动前端服务</h2>
+<h3 id="61">6.1 打开新的命令行窗口</h3>
+<p><strong>重要</strong>: 不要关闭后端的终端窗口，打开一个新的终端窗口</p>
+<h3 id="62">6.2 进入前端目录</h3>
+<pre><code class="language-bash">cd 您的项目路径/ai-article-database/frontend
+</code></pre>
+<h3 id="63">6.3 安装前端依赖</h3>
+<pre><code class="language-bash">npm install
+</code></pre>
+<p>首次安装可能需要几分钟。</p>
+<h3 id="64">6.4 启动前端服务</h3>
+<pre><code class="language-bash">npm run dev
+</code></pre>
+<p>启动成功后，您会看到:</p>
+<pre><code>  VITE v5.x.x  ready in xxx ms
+
+  ➜  Local:   http://localhost:5173/
+</code></pre>
+<hr />
+<h2 id="7">7. 使用系统</h2>
+<h3 id="71">7.1 打开系统界面</h3>
+<p>打开浏览器，访问: <strong>http://localhost:5173</strong></p>
+<p>您将看到环保文献智能数据库的主界面。</p>
+<h3 id="72-">7.2 用户界面 - 文献检索</h3>
+<ol>
+<li>在搜索框输入关键词，如: <code>长三角 水污染</code></li>
+<li>点击"搜索"按钮</li>
+<li>系统会显示相关的文章列表，按相关度排序</li>
+<li>勾选您感兴趣的文章</li>
+<li>点击"生成报告"按钮</li>
+<li>等待AI生成研究报告 (约1-2分钟)</li>
+<li>报告生成后可以下载为Markdown文件</li>
+</ol>
+<h3 id="73-">7.3 管理员界面 - 文章管理</h3>
+<ol>
+<li>点击顶部导航栏的"文章管理"</li>
+<li>查看现有文章列表</li>
+<li>点击"添加文章"可以添加新文章</li>
+<li>点击文章行的"编辑"可以修改文章</li>
+<li>点击"删除"可以删除文章</li>
+</ol>
+<hr />
+<h2 id="8">8. 常见问题解答</h2>
+<h3 id="q1">Q1: 搜索没有结果？</h3>
+<p><strong>可能原因:</strong>
+- 数据库中没有导入文章
+- 关键词与文章内容相关度太低</p>
+<p><strong>解决方法:</strong>
+- 确认已运行 <code>python load_sample_data.py</code> 导入示例数据
+- 尝试不同的关键词，如: "苏州河"、"碳中和"、"生态保护"</p>
+<hr />
+<h3 id="q2-ai">Q2: 生成报告失败，提示"AI服务未启动"？</h3>
+<p><strong>解决方法:</strong>
+1. 确认 Ollama 正在运行
+2. 打开新终端，运行: <code>ollama serve</code>
+3. 确认已下载模型: <code>ollama pull qwen2:7b</code></p>
+<hr />
+<h3 id="q25-ai">Q2.5: 提示"没有可用的AI模型"？</h3>
+<p><strong>解决方法:</strong>
+需要下载至少一个AI模型。运行以下命令之一:</p>
+<pre><code class="language-bash">ollama pull qwen2:7b      # 推荐
+ollama pull qwen2:1.5b    # 较小，内存要求低
+ollama pull llama3:8b     # 备选
+</code></pre>
+<p>如果遇到网络问题，请参考 <a href="#42-国内网络问题解决方案">4.2 国内网络问题解决方案</a></p>
+<hr />
+<h3 id="q3">Q3: 后端启动失败，提示"找不到模块"？</h3>
+<p><strong>解决方法:</strong>
+1. 确认已激活虚拟环境 (命令行前有 <code>(venv)</code>)
+2. 重新安装依赖: <code>pip install -r requirements.txt</code></p>
+<hr />
+<h3 id="q4">Q4: 前端启动失败？</h3>
+<p><strong>解决方法:</strong>
+1. 确认已安装 Node.js
+2. 删除 <code>node_modules</code> 文件夹
+3. 重新运行: <code>npm install</code>
+4. 再次运行: <code>npm run dev</code></p>
+<hr />
+<h3 id="q5">Q5: 首次运行很慢？</h3>
+<p>这是正常现象。首次运行需要:
+1. 下载 BGE 嵌入模型 (~1.3GB)
+2. 加载模型到内存</p>
+<p>之后的运行会快很多。</p>
+<hr />
+<h3 id="q55-no-such-host">Q5.5: 下载模型时提示 "no such host" 或网络错误？</h3>
+<p>这是国内网络访问国外服务器的问题。请参考 <a href="#42-国内网络问题解决方案">4.2 国内网络问题解决方案</a>。</p>
+<p>简单总结:
+1. 如果有VPN，设置代理后再下载
+2. 或者找网络畅通的电脑下载后复制模型文件
+3. 或者尝试下载更小的模型: <code>ollama pull qwen2:1.5b</code></p>
+<hr />
+<h3 id="q6">Q6: 如何停止服务？</h3>
+<p>在对应的终端窗口按 <code>Ctrl+C</code> 即可停止服务。</p>
+<hr />
+<h3 id="q7">Q7: 如何添加自己的文章？</h3>
+<p>方法一: 通过管理界面
+1. 访问 http://localhost:5173/admin
+2. 点击"添加文章"
+3. 填写文章信息并保存</p>
+<p>方法二: 修改示例数据文件
+1. 编辑 <code>data/sample_articles.json</code>
+2. 按照现有格式添加新文章
+3. 重新运行 <code>python load_sample_data.py</code></p>
+<hr />
+<h2 id="_4">快速启动命令汇总</h2>
+<p>每次使用系统时，需要启动三个服务:</p>
+<p><strong>终端1 - Ollama (AI服务):</strong></p>
+<pre><code class="language-bash">ollama serve
+</code></pre>
+<p><strong>终端2 - 后端服务:</strong></p>
+<pre><code class="language-bash">cd ai-article-database/backend
+source venv/bin/activate  # Windows: venv\Scripts\activate
+python main.py
+</code></pre>
+<p><strong>终端3 - 前端服务:</strong></p>
+<pre><code class="language-bash">cd ai-article-database/frontend
+npm run dev
+</code></pre>
+<p>然后打开浏览器访问: http://localhost:5173</p>
+<hr />
+<h2 id="_5">联系支持</h2>
+<p>如有问题，请联系技术支持。</p>
+<hr />
+<p><em>环保文献智能数据库 v1.1.0</em></p>
+<p><em>支持模型: Qwen2, DeepSeek, Llama3, Gemma2, Mistral 等</em></p>
+
+    <script>
+        // Auto-scroll to top when printing
+        window.onbeforeprint = function() {
+            window.scrollTo(0, 0);
+        };
+    </script>
+</body>
+</html>
