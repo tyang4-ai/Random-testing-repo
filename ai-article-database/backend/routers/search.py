@@ -9,7 +9,7 @@ from database import get_db
 from models import Article
 from schemas import SearchRequest, SearchResult, ReportRequest, ReportResponse, ArticleResponse
 from services.search import search_articles
-from services.llm import generate_research_report, check_ollama_status
+from services.llm import generate_research_report, check_ollama_status, get_available_models, get_best_available_model
 
 router = APIRouter(prefix="/api/search", tags=["搜索与报告"])
 
@@ -105,9 +105,20 @@ def generate_report(request: ReportRequest, db: Session = Depends(get_db)):
 def get_service_status():
     """检查服务状态"""
     ollama_running = check_ollama_status()
+    available_models = get_available_models() if ollama_running else []
+    current_model = get_best_available_model() if ollama_running else None
+
+    if not ollama_running:
+        message = "警告: Ollama 服务未启动。请运行 'ollama serve'"
+    elif not available_models:
+        message = "警告: 没有可用的AI模型。请运行 'ollama pull qwen2:7b' 下载模型"
+    else:
+        message = f"服务正常运行，使用模型: {current_model}"
 
     return {
-        "database": True,  # 如果能到达这里，数据库就是正常的
+        "database": True,
         "ollama": ollama_running,
-        "message": "所有服务正常运行" if ollama_running else "警告: Ollama 服务未启动"
+        "available_models": available_models,
+        "current_model": current_model,
+        "message": message
     }

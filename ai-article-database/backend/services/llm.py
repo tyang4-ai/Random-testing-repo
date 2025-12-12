@@ -1,11 +1,29 @@
 """
-DeepSeek LLM 服务 (通过 Ollama)
+LLM 服务 (通过 Ollama)
+支持多种模型: DeepSeek, Qwen, Llama, Gemma 等
 """
 import requests
 import json
 from typing import List, Dict, Optional
 
 OLLAMA_BASE_URL = "http://localhost:11434"
+
+# 按优先级排列的支持模型列表
+SUPPORTED_MODELS = [
+    "deepseek-v2",
+    "deepseek-coder:6.7b",
+    "qwen2:7b",
+    "qwen2:1.5b",
+    "qwen:7b",
+    "llama3:8b",
+    "llama3.1:8b",
+    "gemma2:9b",
+    "gemma:7b",
+    "mistral:7b",
+]
+
+# 缓存当前可用的模型
+_current_model = None
 
 
 def check_ollama_status() -> bool:
@@ -17,17 +35,60 @@ def check_ollama_status() -> bool:
         return False
 
 
-def generate_text(prompt: str, model: str = "deepseek-v2") -> str:
+def get_available_models() -> List[str]:
+    """获取已安装的模型列表"""
+    try:
+        response = requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=5)
+        if response.status_code == 200:
+            models = response.json().get("models", [])
+            return [m["name"] for m in models]
+    except:
+        pass
+    return []
+
+
+def get_best_available_model() -> Optional[str]:
+    """获取最佳可用模型"""
+    global _current_model
+
+    if _current_model:
+        return _current_model
+
+    available = get_available_models()
+    if not available:
+        return None
+
+    # 按优先级查找
+    for model in SUPPORTED_MODELS:
+        for avail in available:
+            if model in avail or avail in model:
+                _current_model = avail
+                print(f"使用模型: {_current_model}")
+                return _current_model
+
+    # 如果没有找到优先模型，使用第一个可用的
+    _current_model = available[0]
+    print(f"使用模型: {_current_model}")
+    return _current_model
+
+
+def generate_text(prompt: str, model: str = None) -> str:
     """
-    使用 DeepSeek 生成文本
+    使用 LLM 生成文本 (自动选择最佳可用模型)
 
     Args:
         prompt: 提示词
-        model: 模型名称 (默认 deepseek-v2)
+        model: 模型名称 (可选，默认自动选择)
 
     Returns:
         生成的文本
     """
+    # 自动选择模型
+    if model is None:
+        model = get_best_available_model()
+        if model is None:
+            return "错误: 没有找到可用的AI模型。请先运行 'ollama pull qwen2:7b' 下载模型"
+
     try:
         response = requests.post(
             f"{OLLAMA_BASE_URL}/api/generate",
@@ -41,7 +102,7 @@ def generate_text(prompt: str, model: str = "deepseek-v2") -> str:
                     "num_predict": 4096,
                 }
             },
-            timeout=120  # 2分钟超时
+            timeout=180  # 3分钟超时 (较小模型可能更慢)
         )
 
         if response.status_code == 200:

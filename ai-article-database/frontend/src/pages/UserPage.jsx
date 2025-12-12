@@ -106,6 +106,16 @@ function UserPage() {
           ⚠️ AI服务未启动。请在终端运行 <code>ollama serve</code> 启动Ollama服务后再试。
         </div>
       )}
+      {serviceStatus && serviceStatus.ollama && !serviceStatus.current_model && (
+        <div className="alert alert-error">
+          ⚠️ 没有可用的AI模型。请运行 <code>ollama pull qwen2:7b</code> 下载模型。
+        </div>
+      )}
+      {serviceStatus && serviceStatus.current_model && (
+        <div className="alert alert-info">
+          ✓ AI服务正常运行，当前模型: {serviceStatus.current_model}
+        </div>
+      )}
 
       {/* 搜索区域 */}
       <div className="card">
