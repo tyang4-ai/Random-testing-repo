@@ -1,8 +1,8 @@
 # ILUVATAR 2.0
 
-**Automated Hackathon Pipeline - Win Hackathons with 20 AI Agents**
+**Automated Hackathon Pipeline - Win Hackathons with 26 AI Agents**
 
-ILUVATAR 2.0 is an intelligent, multi-agent system that automates the entire hackathon process from ideation to deployment. Built with Claude (Opus/Sonnet/Haiku), it orchestrates 20 specialized AI agents to build winning projects in 24-48 hours.
+ILUVATAR 2.0 is an intelligent, multi-agent system that automates the entire hackathon process from ideation to deployment. Built with Claude (Opus/Sonnet/Haiku), it orchestrates 26 specialized AI agents to build winning projects in 24-48 hours.
 
 ---
 
@@ -20,7 +20,7 @@ ILUVATAR 2.0 is an intelligent, multi-agent system that automates the entire hac
 
 ## 🏗️ Architecture
 
-### 20-Agent System
+### 26-Agent System
 
 | Layer | Agents | Model | Role |
 |-------|--------|-------|------|
@@ -130,11 +130,11 @@ System Status:
 
 ## 📖 Documentation
 
-- **[Setup Tutorial](SETUP-TUTORIAL.md)** - Complete beginner-friendly guide (AWS deployment)
-- **[Agent Roster](docs/agent-roster.md)** - Detailed description of all 20 agents
-- **[Architecture Guide](docs/architecture.md)** - System design and data flow
-- **[API Reference](docs/api-reference.md)** - State management and message bus
-- **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
+- **[Setup Tutorial](docs/SETUP-TUTORIAL.md)** - Complete beginner-friendly guide
+- **[Deployment Guide](docs/DEPLOYMENT-GUIDE.md)** - AWS deployment instructions
+- **[User Manual](docs/USER-MANUAL.md)** - Discord commands and usage
+- **[Implementation Status](docs/STATUS.md)** - Detailed component status
+- **[Session Context](docs/SESSION-CONTEXT.md)** - Development tracking
 
 ---
 
